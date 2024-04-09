@@ -98,7 +98,7 @@ const generateAccessAndRefreshToken = async (attendee) => {
             )
           );
 });
-
+// refresh access token
 const refreshAccessToken = asyncHandler(async (req, res) => {
   //get refresh token from attendee
   const incomingRefershToken =
@@ -139,4 +139,4 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
 });
 
 
-export { getAllAttendees, registerAttendee, loginAttendee};
+export { getAllAttendees, registerAttendee, loginAttendee,refreshAccessToken};

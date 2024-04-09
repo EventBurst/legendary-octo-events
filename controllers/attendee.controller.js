@@ -2,6 +2,7 @@ import  Attendee from "../models/attendee.model.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
+
 import mongoose from "mongoose";
 
 
@@ -93,7 +94,7 @@ const generateAccessAndRefreshToken = async (attendee) => {
           .json(
             new ApiResponse(
               200,
-              { loggedInAttendee, accessToken, refreshToken },
+              { loggedInAttendee},
               "Attendee Logged In Successfully"
             )
           );

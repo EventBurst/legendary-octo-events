@@ -38,5 +38,65 @@ const registerAttendee = asyncHandler(async (req, res) => {
   return res.status(201).json(new ApiResponse(201, attendee, "Attendee registered"));
 });
 
+//generate access and refresh token
+const generateAccessAndRefreshToken = async (attendee) => {
+  try {
+    const refreshToken = attendee.generateRefreshToken();
+    const accessToken = attendee.generateAccessToken();
+    attendee.refreshToken = refreshToken;
+    await attendee.save();
+    return { accessToken, refreshToken };
+  } catch (error) {
+   throw new ApiError(500, "Something Went Wrong While Generating Token");
+  }
+};
 
-export { getAllAttendees };
+ // login Attendee
+ const loginAttendee = asyncHandler(async (req, res) => {
+
+  //get Attendee details from frontend
+  const { email, password } = req.body;
+
+  //validation-not empty
+  if ([email, password].some((value) => value.trim() === "")) {
+    throw new ApiError(400, "All Fields are required");
+  }
+
+  //check if Attendee exists :email
+  const attendee = await Attendee.findOne({ email: email });
+  if (!attendee) {
+    throw new ApiError(404, "Attendee with email not found");
+  }
+
+  //check if password is correct
+  const isPasswordCorrect = await attendee.isPasswordCorrect(password);
+  if (!isPasswordCorrect) {
+    throw new ApiError(401, "Invalid Credentials");
+  }
+
+  //generate access and refresh token
+  const { accessToken, refreshToken } = await generateAccessAndRefreshToken(
+    attendee
+  );
+
+  // remove password and refresh token field from response
+  const loggedInAttendee = await Attendee.findById(attendee._id).select(
+      "-password -refreshToken");
+      const option = {
+          httpOnly: true,
+          secure: true,
+        };
+        return res
+          .status(200)
+          .cookie("accessToken", accessToken, option)
+          .cookie("refreshToken", refreshToken, option)
+          .json(
+            new ApiResponse(
+              200,
+              { loggedInAttendee, accessToken, refreshToken },
+              "Attendee Logged In Successfully"
+            )
+          );
+});
+
+export { getAllAttendees, registerAttendee, loginAttendee};

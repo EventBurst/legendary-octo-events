@@ -39,6 +39,28 @@ next();
 AttendeeSchema.methods.isPasswordCorrect = async function (password) {
 return await bcrypt.compare(password, this.password);
 };
+AttendeeSchema.methods.generateAccessToken = function () {
+return jwt.sign(
+  {
+    _id: this._id,
+    email: this.email,
+    fullname: this.fullname,
+  },
+  process.env.ACCESS_TOKEN_SECRET,
+  { expiresIn: process.env.ACCESS_TOKEN_EXPIRY }
+);
+};
+AttendeeSchema.methods.generateRefreshToken = function () {
+return jwt.sign(
+  {
+    _id: this._id,
+  },
+  process.env.REFRESH_TOKEN_SECRET,
+  { expiresIn: process.env.REFRESH_TOKEN_EXPIRY }
+);
+};
+// Create the Attendee model
+const Attendee = model("Attendee", AttendeeSchema);
 
 // Export the Attendee model
 export default Attendee;

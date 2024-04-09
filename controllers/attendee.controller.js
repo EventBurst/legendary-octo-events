@@ -99,4 +99,44 @@ const generateAccessAndRefreshToken = async (attendee) => {
           );
 });
 
+const refreshAccessToken = asyncHandler(async (req, res) => {
+  //get refresh token from attendee
+  const incomingRefershToken =
+    req.cookies.refreshToken || req.body.refreshToken;
+  if (!incomingRefershToken) throw new ApiError(401, "Unauthorized request");
+  // decode  token
+  const decoded = jwt.verify(
+    incomingRefershToken,
+    process.env.REFRESH_TOKEN_SECRET
+  );
+  const attendee = await Attendee.findById(decoded?._id);
+  if (!attendee) {
+    throw new ApiError(401, "Invalid Refresh Token");
+  }
+  // verify token with the token stored in the attendee db
+  if (attendee.refreshToken !== incomingRefershToken) {
+    throw new ApiError(401, "Invalid Refresh Token");
+  }
+  // if valid, generateAccessAndRefreshToken
+  const { accessToken, refreshToken } =
+    await generateAccessAndRefreshToken(attendee);
+  // send cookies response to the attendee
+  const options = {
+    httpOnly: true,
+    secure: true,
+  };
+  return res
+    .status(200)
+    .cookie("accessToken", accessToken, options)
+    .cookie("refreshToken", refreshToken, options)
+    .json(
+      new ApiResponse(
+        200,
+        { accessToken, refreshToken },
+        "Access Token Refreshed Successfully"
+      )
+    );
+});
+
+
 export { getAllAttendees, registerAttendee, loginAttendee};

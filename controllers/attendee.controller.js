@@ -1,4 +1,4 @@
-import { Attendee } from "../models/attendee.model.js";
+import  Attendee from "../models/attendee.model.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";

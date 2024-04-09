@@ -2,6 +2,9 @@ import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 
+// import routes
+import attendeRoutes from './routes/attende.routes.js'
+
 const app = express();
 // for body parser
 app.use(express.json());
@@ -16,4 +19,7 @@ app.use(cors());
 app.get("/", (_, res) => {
   res.send("HLO");
 });
+
+//Routes
+app.use("/api/legendry-octo-events/attendee", attendeRoutes);
 export default app;

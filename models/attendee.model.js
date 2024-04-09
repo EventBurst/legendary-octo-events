@@ -29,6 +29,8 @@ const AttendeeSchema = new Schema({
     type: String,
   },
 });
+
+// Hash the password before saving the Attendee model
 AttendeeSchema.pre("save", async function (next) {
   // Hash the password before saving the Attende model only when the password is modified or new
 if (this.isModified("password")) {
@@ -36,9 +38,13 @@ if (this.isModified("password")) {
 }
 next();
 });
+
+// Check if the password is correct
 AttendeeSchema.methods.isPasswordCorrect = async function (password) {
 return await bcrypt.compare(password, this.password);
 };
+
+// Generate an access token
 AttendeeSchema.methods.generateAccessToken = function () {
 return jwt.sign(
   {
@@ -50,6 +56,8 @@ return jwt.sign(
   { expiresIn: process.env.ACCESS_TOKEN_EXPIRY }
 );
 };
+
+// Generate a refresh token
 AttendeeSchema.methods.generateRefreshToken = function () {
 return jwt.sign(
   {
@@ -59,6 +67,7 @@ return jwt.sign(
   { expiresIn: process.env.REFRESH_TOKEN_EXPIRY }
 );
 };
+
 // Create the Attendee model
 const Attendee = model("Attendee", AttendeeSchema);
 

@@ -1,15 +1,16 @@
-import  Attendee from "../models/attendee.model.js";
+import Attendee from "../models/attendee.model.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
-import mongoose from "mongoose";
-
+import jwt from "jsonwebtoken";
 
 // get all attendees
 const getAllAttendees = asyncHandler(async (req, res) => {
   const attendees = await Attendee.find();
   if (!attendees) throw new ApiError(404, "Attendee not found");
-  return res.status(200).json(new ApiResponse(200, attendees, "Attendees found"));
+  return res
+    .status(200)
+    .json(new ApiResponse(200, attendees, "Attendees found"));
 });
 
 // register an attendee
@@ -21,7 +22,7 @@ const registerAttendee = asyncHandler(async (req, res) => {
   // check if the email is already registered
   const attendeeExists = await Attendee.findOne({ email });
   if (attendeeExists) throw new ApiError(400, "Email already registered");
-  
+
   // create a new attendee
   const attendee = await Attendee.create({
     name,
@@ -32,10 +33,12 @@ const registerAttendee = asyncHandler(async (req, res) => {
   });
 
   const createdAttendee = await Attendee.findById(attendee._id).select(
-    "-password -refreshToken"
+    "-password -refreshToken",
   );
   if (!createdAttendee) throw new ApiError(500, "Attendee creation failed");
-  return res.status(201).json(new ApiResponse(201, attendee, "Attendee registered"));
+  return res
+    .status(201)
+    .json(new ApiResponse(201, attendee, "Attendee registered"));
 });
 
 //generate access and refresh token
@@ -47,13 +50,12 @@ const generateAccessAndRefreshToken = async (attendee) => {
     await attendee.save();
     return { accessToken, refreshToken };
   } catch (error) {
-   throw new ApiError(500, "Something Went Wrong While Generating Token");
+    throw new ApiError(500, "Something Went Wrong While Generating Token");
   }
 };
 
- // login Attendee
- const loginAttendee = asyncHandler(async (req, res) => {
-
+// login Attendee
+const loginAttendee = asyncHandler(async (req, res) => {
   //get Attendee details from frontend
   const { email, password } = req.body;
 
@@ -75,28 +77,28 @@ const generateAccessAndRefreshToken = async (attendee) => {
   }
 
   //generate access and refresh token
-  const { accessToken, refreshToken } = await generateAccessAndRefreshToken(
-    attendee
-  );
+  const { accessToken, refreshToken } =
+    await generateAccessAndRefreshToken(attendee);
 
   // remove password and refresh token field from response
   const loggedInAttendee = await Attendee.findById(attendee._id).select(
-      "-password -refreshToken");
-      const option = {
-          httpOnly: true,
-          secure: true,
-        };
-        return res
-          .status(200)
-          .cookie("accessToken", accessToken, option)
-          .cookie("refreshToken", refreshToken, option)
-          .json(
-            new ApiResponse(
-              200,
-              { loggedInAttendee, accessToken, refreshToken },
-              "Attendee Logged In Successfully"
-            )
-          );
+    "-password -refreshToken",
+  );
+  const option = {
+    httpOnly: true,
+    secure: true,
+  };
+  return res
+    .status(200)
+    .cookie("accessToken", accessToken, option)
+    .cookie("refreshToken", refreshToken, option)
+    .json(
+      new ApiResponse(
+        200,
+        { loggedInAttendee, accessToken, refreshToken },
+        "Attendee Logged In Successfully",
+      ),
+    );
 });
 // refresh access token
 const refreshAccessToken = asyncHandler(async (req, res) => {
@@ -107,7 +109,7 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
   // decode  token
   const decoded = jwt.verify(
     incomingRefershToken,
-    process.env.REFRESH_TOKEN_SECRET
+    process.env.REFRESH_TOKEN_SECRET,
   );
   const attendee = await Attendee.findById(decoded?._id);
   if (!attendee) {
@@ -133,10 +135,10 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
       new ApiResponse(
         200,
         { accessToken, refreshToken },
-        "Access Token Refreshed Successfully"
-      )
+        "Access Token Refreshed Successfully",
+      ),
     );
 });
 
+export { getAllAttendees, registerAttendee, loginAttendee, refreshAccessToken };
 
-export { getAllAttendees, registerAttendee, loginAttendee,refreshAccessToken};

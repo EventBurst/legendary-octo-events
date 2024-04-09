@@ -5,7 +5,7 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 import jwt from "jsonwebtoken";
 
 // get all attendees
-const getAllAttendees = asyncHandler(async (req, res) => {
+const getAllAttendees = asyncHandler(async (_, res) => {
   const attendees = await Attendee.find();
   if (!attendees) throw new ApiError(404, "Attendee not found");
   return res

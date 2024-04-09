@@ -141,4 +141,3 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
 });
 
 export { getAllAttendees, registerAttendee, loginAttendee, refreshAccessToken };
-

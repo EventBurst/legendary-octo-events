@@ -2,7 +2,7 @@
 import { Schema, model } from "mongoose";
 
 // Define the Attendee schema
-const attendeeSchema = new Schema({
+const AttendeeSchema = new Schema({
   name: {
     type: String,
     required: true,
@@ -23,7 +23,7 @@ const attendeeSchema = new Schema({
 });
 
 // Create the Attendee model
-const Attendee = model("Attendee", attendeeSchema);
+const Attendee = model("Attendee", AttendeeSchema);
 
 // Export the Attendee model
 export default Attendee;

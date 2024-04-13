@@ -140,4 +140,39 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
     );
 });
 
-export { getAllAttendees, registerAttendee, loginAttendee, refreshAccessToken };
+// buy ticket
+const buyTicket = asyncHandler(async (req, res) => {
+  const  attendeeId  = req.attendee._id;
+  const { eventId } = req.params;
+  // console.log(attendeeId, eventId)
+  const attendee = await Attendee.findById(attendeeId);
+  if (!attendee) throw new ApiError(404, "Attendee not found");
+  var result = null;
+  // Make a POST request to create the ticket
+  await fetch(process.env.TICKET_API_URL + "buy", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({attendeeId,eventId,ticketPrice:100,  organizerId:"",  accessType:"vip"}), // Use the stringified speaker data
+  })
+    .then((response) => {
+      // Check if the response is successful (status 200)
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      return response.json();
+    })
+    .then((data) => {
+      // Handle the response data according to your application logic
+      // console.log("ENtered here")
+      result = data.data;
+    })
+    .catch((error) => {
+      // Handle any errors that occurred during the fetch
+      console.error("There was a problem with the fetch operation:", error);
+    });
+ if(!result) throw new ApiError(400, "Ticket not bought");
+  return res
+    .status(200)
+    .json(new ApiResponse(200, result, "Ticket bought successfully"));
+});
+export { getAllAttendees, registerAttendee, loginAttendee, refreshAccessToken, buyTicket};

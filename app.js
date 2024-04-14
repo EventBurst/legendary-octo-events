@@ -22,4 +22,12 @@ app.get("/", (_, res) => {
 
 //Routes
 app.use("/api/legendry-octo-events/attendee", attendeRoutes);
+
+// Swagger UI
+app.use(
+  "/api/shiny-barnacle/docs",
+  swaggerUi.serve,
+  swaggerUi.setup(swaggerDocument)
+);
+
 export default app;

@@ -5,7 +5,73 @@ info:
   version: 1.0.0
 servers:
   - url: http://localhost:8003
-  
+
+paths:
+  /api/shiny-barnacle/attendee/get-all:
+    get:
+      summary: Get all attendees
+      description: Retrieve a list of all attendees.
+      tags:
+        - Attendee
+      responses:
+        "200":
+          description: A list of all attendees
+
+  /api/shiny-barnacle/attendee/create:
+    post:
+      summary: Register a new attendee
+      description: Register a new attendee in the system.
+      tags:
+        - Attendee
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Attendee"
+      responses:
+        "200":
+          description: Attendee registered successfully
+
+  /api/shiny-barnacle/attendee/login:
+    post:
+      summary: Login as an attendee
+      description: Authenticate as an attendee.
+      tags:
+        - Attendee
+      responses:
+        "200":
+          description: Attendee logged in successfully
+
+  /api/shiny-barnacle/attendee/refresh-token:
+    post:
+      summary: Refresh access token
+      description: Refresh the access token using the refresh token.
+      tags:
+        - Attendee
+      responses:
+        "200":
+          description: Access token refreshed successfully
+
+  /api/shiny-barnacle/attendee/buy-ticket/{eventId}:
+    post:
+      summary: Buy a ticket
+      description: Purchase a ticket for the specified event.
+      tags:
+        - Attendee
+      parameters:
+        - in: path
+          name: eventId
+          required: true
+          schema:
+            type: string
+          description: ID of the event to buy a ticket for
+      responses:
+        "200":
+          description: Ticket purchased successfully
+        "401":
+          description: Unauthorized - JWT token is missing or invalid
+
 components:
   schemas:
     Attendee:

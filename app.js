@@ -2,8 +2,14 @@ import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 
+// Swagger UI
+import swaggerUi from "swagger-ui-express";
+import YAML from "yamljs";
+
 // import routes
 import attendeRoutes from './routes/attende.routes.js'
+
+const swaggerDocument = YAML.load("./swagger.yaml");
 
 const app = express();
 // for body parser

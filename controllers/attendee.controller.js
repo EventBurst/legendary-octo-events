@@ -154,7 +154,7 @@ const buyTicket = asyncHandler(async (req, res) => {
   await fetch(process.env.TICKET_API_URL + "buy", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({attendeeId,eventId,ticketPrice:100,  organizerId:"",  accessType:"vip"}), // Use the stringified speaker data
+    body: JSON.stringify({attendeeId,eventId,ticketPrice:200,  organizerId:"",  accessType:"vip"}), // Use the stringified speaker data
   })
     .then((response) => {
       // Check if the response is successful (status 200)

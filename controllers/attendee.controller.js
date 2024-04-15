@@ -177,4 +177,37 @@ const buyTicket = asyncHandler(async (req, res) => {
     .status(200)
     .json(new ApiResponse(200, result, "Ticket bought successfully"));
 });
-export { getAllAttendees, registerAttendee, loginAttendee, refreshAccessToken, buyTicket};
+
+// buy ticket
+const getAttendeeTickets = asyncHandler(async (req, res) => {
+  const  attendeeId  = req.attendee._id;
+  const attendee = await Attendee.findById(attendeeId);
+  if (!attendee) throw new ApiError(404, "Attendee not found");
+  var result = null;
+  // Make a GET request to get the tickets
+  await fetch(process.env.TICKET_API_URL + "get-by-attendee-id", {
+    method: "GET",
+    headers: { "Content-Type": "application/json" },
+  })
+    .then((response) => {
+      // Check if the response is successful (status 200)
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      return response.json();
+    })
+    .then((data) => {
+      // Handle the response data according to your application logic
+      // console.log("ENtered here")
+      result = data.data;
+    })
+    .catch((error) => {
+      // Handle any errors that occurred during the fetch
+      console.error("There was a problem with the fetch operation:", error);
+    });
+ if(!result) throw new ApiError(400, "Ticket not bought");
+  return res
+    .status(200)
+    .json(new ApiResponse(200, result, "Ticket bought successfully"));
+});
+export { getAllAttendees, registerAttendee, loginAttendee, refreshAccessToken, buyTicket, getAttendeeTickets};

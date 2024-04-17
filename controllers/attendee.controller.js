@@ -185,7 +185,7 @@ const getAttendeeTickets = asyncHandler(async (req, res) => {
   if (!attendee) throw new ApiError(404, "Attendee not found");
   var result = null;
   // Make a GET request to get the tickets
-  await fetch(process.env.TICKET_API_URL + "get-by-attendee-id", {
+  await fetch(process.env.TICKET_API_URL + "get-by-attendee-id"+ "/"+req.attendee._id, {
     method: "GET",
     headers: { "Content-Type": "application/json" },
   })
@@ -200,14 +200,15 @@ const getAttendeeTickets = asyncHandler(async (req, res) => {
       // Handle the response data according to your application logic
       // console.log("ENtered here")
       result = data.data;
+      console.log(result)
     })
     .catch((error) => {
       // Handle any errors that occurred during the fetch
       console.error("There was a problem with the fetch operation:", error);
     });
- if(!result) throw new ApiError(400, "Ticket not bought");
+ if(!result) throw new ApiError(400, "No Ticket Found");
   return res
     .status(200)
-    .json(new ApiResponse(200, result, "Ticket bought successfully"));
+    .json(new ApiResponse(200, result, "Ticket Fetched Suucessfulyy"));
 });
 export { getAllAttendees, registerAttendee, loginAttendee, refreshAccessToken, buyTicket, getAttendeeTickets};
